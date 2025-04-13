@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChatHistoryItem } from '@/app/lib/types';
 import { trackMessage, trackQuickReply } from '@/app/utils/analytics';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Message {
     id: string;
@@ -12,21 +13,21 @@ interface Message {
 
 const initialMessageOptions: Message[] = [
     {
-        id: '1',
+        id: '0',
         text: "你好！我是你的宝宝起名助手。你想先看看男宝宝名字、女宝宝名字，还是想要一些通用建议呢？",
         sender: 'assistant',
         quickReplies: ['建议一些男宝宝名字', '建议一些女宝宝名字', '我已经想好了', '给我一些通用建议']
     },
     // ask for criteria
     {
-        id: '2',
+        id: '1',
         text: "您想给宝宝按照什么标准起名呢？",
         sender: 'assistant',
         quickReplies: ['姓氏', '祝愿', '生肖', '星座', '五行', '诗词', '成语', '其他']
     },
     // A few other things we can do as you are a helpful assistant who gives name suggestions
     {
-        id: '3',
+        id: '2',
         text: "欢迎来到宝宝起名助手！",
         sender: 'assistant',
         quickReplies: [
@@ -41,6 +42,8 @@ const Chat: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
     // Initialize chat with backend
     React.useEffect(() => {
@@ -69,13 +72,20 @@ const Chat: React.FC = () => {
                     quickReplies: data.quickReplies
                 };
                 setMessages([initialMessage]);
+
+                // Update URL with variant if present
+                if (data.variant !== undefined) {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set('variant', data.variant.toString());
+                    router.push(`/?${params.toString()}`);
+                }
             } catch (error) {
                 console.error('Failed to initialize chat:', error);
             }
         };
 
         initializeChat();
-    }, []);
+    }, [router, searchParams]);
 
     const sendMessageToAPI = async (content: string) => {
         // Convert messages to ChatHistoryItem format
