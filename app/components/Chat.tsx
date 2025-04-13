@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChatHistoryItem } from '@/app/lib/types';
 import { trackMessage, trackQuickReply } from '@/app/utils/analytics';
+import Link from 'next/link';
 
 interface Message {
     id: string;
@@ -118,7 +119,9 @@ const Chat: React.FC = () => {
             {/* 聊天头部 */}
             <div className="bg-white shadow-sm p-4 flex items-center">
                 <div className="flex-1">
-                    <h1 className="text-xl font-semibold text-purple-700">宝宝起名助手</h1>
+                    <Link href="/?utm_source=chat_header">
+                        <h1 className="text-xl font-semibold text-purple-700">宝宝起名助手</h1>
+                    </Link>
                     <p className="text-sm text-gray-500">为你的宝宝找个好名字</p>
                 </div>
             </div>
