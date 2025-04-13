@@ -2,6 +2,7 @@ declare global {
   interface Window {
     trackMessage: (message: string, type: string) => void;
     trackQuickReply: (selectedReply: string) => void;
+    gtag: (command: string, eventName: string, eventParams?: Record<string, any>) => void;
   }
 }
 

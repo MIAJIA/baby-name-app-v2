@@ -17,11 +17,44 @@ Please note that the answer and quickReplies must be returned in json format.
 
 `;
 
+// Initial message variants
+const initialMessageOptions = [
+    {
+        text: "你好！我是你的宝宝起名助手。你想先看看男宝宝名字、女宝宝名字，还是想要一些通用建议呢？",
+        quickReplies: ['建议男宝宝名字', '建议女宝宝名字', '我已经想好了', '给我一些通用建议']
+    },
+    {
+        text: "您想给宝宝按照什么标准起名呢？",
+        quickReplies: ['姓氏', '祝愿', '生肖', '星座', '五行', '诗词', '成语', '其他']
+    },
+    {
+        text: "欢迎来到宝宝起名助手！",
+        quickReplies: [
+            '我该怎样给宝宝起名？',
+            '起名字的讲究',
+            '起名有什么技巧？',
+        ]
+    }
+];
+
 export async function POST(request: Request) {
     try {
         const body = await request.json() as { chatContent: string, chatHistory: ChatHistoryItem[] };
         const { chatContent, chatHistory } = body;
         console.log(`chatContent: ${chatContent}, chatHistory: ${chatHistory}`);
+
+        // If this is the first message, return a random initial message
+        if (chatHistory.length === 0) {
+            const variantIndex = Math.floor(Math.random() * initialMessageOptions.length);
+            const initialMessage = initialMessageOptions[variantIndex];
+            
+            return NextResponse.json({
+                chatContent: initialMessage.text,
+                quickReplies: initialMessage.quickReplies,
+                variant: variantIndex
+            });
+        }
+
         // 验证必要的参数
         if (!chatContent) {
             return NextResponse.json(
