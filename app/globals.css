@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities; 
+@tailwind utilities;
+
+:root {
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: calc(1rem + var(--safe-area-inset-bottom));
+  }
+  
+  .h-screen-safe {
+    height: 100dvh;
+  }
+}
+
+/* 确保body和html占满整个视口 */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 防止iOS上的弹性滚动 */
+body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+} 

@@ -107,7 +107,7 @@ const Chat: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+        <div className="flex flex-col h-[100dvh] bg-gradient-to-b from-blue-50 to-purple-50">
             {/* 聊天头部 */}
             <div className="bg-white shadow-sm p-4 flex items-center">
                 <div className="flex-1">
@@ -116,8 +116,8 @@ const Chat: React.FC = () => {
                 </div>
             </div>
 
-            {/* 消息容器 */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/* 消息容器 - 添加padding-bottom来为固定定位的输入框留出空间 */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
                 {messages.map((message) => (
                     <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[80%] rounded-2xl p-4 ${
@@ -157,8 +157,8 @@ const Chat: React.FC = () => {
                 )}
             </div>
 
-            {/* 输入区域 */}
-            <div className="bg-white p-4 shadow-lg">
+            {/* 输入区域 - 使用fixed定位 */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg border-t border-gray-200 pb-safe">
                 <div className="flex items-center gap-2 max-w-4xl mx-auto">
                     <input
                         type="text"
