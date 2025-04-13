@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChatHistoryItem } from '@/app/lib/types';
+import { trackMessage, trackQuickReply } from '@/app/utils/analytics';
 
 interface Message {
     id: string;
@@ -66,6 +67,9 @@ const Chat: React.FC = () => {
         setInputText('');
         setIsLoading(true);
         
+        // Track user message
+        trackMessage(inputText, 'user_message');
+        
         try {
             await sendMessageToAPI(inputText);
         } catch (error) {
@@ -90,6 +94,9 @@ const Chat: React.FC = () => {
 
         setMessages(prev => [...prev, newMessage]);
         setIsLoading(true);
+        
+        // Track quick reply selection
+        trackQuickReply(reply);
         
         try {
             await sendMessageToAPI(reply);
