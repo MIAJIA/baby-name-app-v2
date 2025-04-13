@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChatHistoryItem } from '@/app/lib/types';
 
 interface Message {
     id: string;
@@ -19,6 +20,39 @@ const Chat: React.FC = () => {
     const [inputText, setInputText] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const sendMessageToAPI = async (content: string) => {
+        // Convert messages to ChatHistoryItem format
+        const chatHistory: ChatHistoryItem[] = messages.map(msg => ({
+            role: msg.sender,
+            content: msg.text
+        }));
+
+        const response = await fetch('/api/v1/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chatContent: content,
+                chatHistory: chatHistory
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get response from server');
+        }
+
+        const data = await response.json();
+        
+        const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: data.chatContent,
+            sender: 'assistant',
+            quickReplies: data.quickReplies
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+    };
+
     const handleSend = async () => {
         if (!inputText.trim() || isLoading) return;
 
@@ -33,45 +67,43 @@ const Chat: React.FC = () => {
         setIsLoading(true);
         
         try {
-            const response = await fetch('/api/v1/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    sessionId: 'test-session', // 实际使用时应该使用真实的会话ID
-                    chatContent: inputText,
-                    chatHistory: messages.map(msg => msg.text)
-                })
-            });
-
-            const data = await response.json();
-            
-            const assistantMessage: Message = {
-                id: (Date.now() + 1).toString(),
-                text: data.chatContent,
-                sender: 'assistant',
-                quickReplies: ['查看更多', '换一批', '查看详细含义']
-            };
-            setMessages(prev => [...prev, assistantMessage]);
+            await sendMessageToAPI(inputText);
         } catch (error) {
             console.error('Failed to send message:', error);
-            // 可以添加错误提示UI
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                text: '抱歉，发生了错误，请稍后再试。',
+                sender: 'assistant'
+            };
+            setMessages(prev => [...prev, errorMessage]);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleQuickReply = (reply: string) => {
+    const handleQuickReply = async (reply: string) => {
         const newMessage: Message = {
             id: Date.now().toString(),
             text: reply,
             sender: 'user'
         };
-        setMessages([...messages, newMessage]);
+
+        setMessages(prev => [...prev, newMessage]);
+        setIsLoading(true);
         
-        // 处理快速回复的逻辑
-        handleSend();
+        try {
+            await sendMessageToAPI(reply);
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            const errorMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                text: '抱歉，发生了错误，请稍后再试。',
+                sender: 'assistant'
+            };
+            setMessages(prev => [...prev, errorMessage]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -96,7 +128,7 @@ const Chat: React.FC = () => {
                             <p className={message.sender === 'user' ? 'text-white' : 'text-gray-800'}>
                                 {message.text}
                             </p>
-                            {message.quickReplies && (
+                            {message.quickReplies && message.quickReplies.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-3">
                                     {message.quickReplies.map((reply) => (
                                         <button
@@ -112,6 +144,17 @@ const Chat: React.FC = () => {
                         </div>
                     </div>
                 ))}
+                {isLoading && (
+                    <div className="flex justify-start">
+                        <div className="bg-white shadow-md rounded-2xl p-4 rounded-bl-none">
+                            <div className="flex space-x-2">
+                                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce"></div>
+                                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* 输入区域 */}
