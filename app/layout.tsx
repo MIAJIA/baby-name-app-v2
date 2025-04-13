@@ -1,5 +1,12 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { ZCOOL_KuaiLe } from 'next/font/google';
+
+const zcoolKuaiLe = ZCOOL_KuaiLe({
+  weight: '400',
+  subsets: ['latin'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: '宝宝起名助手',
@@ -13,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh">
-      <body>{children}</body>
+      <body className={zcoolKuaiLe.className}>{children}</body>
     </html>
   );
 } 

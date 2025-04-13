@@ -4,7 +4,7 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { chatContent, chatHistory } = body;
-
+        
         // 验证必要的参数
         if (!chatContent) {
             return NextResponse.json(
