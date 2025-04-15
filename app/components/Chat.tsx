@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import NameRecommendations from './NameRecommendations';
 import NameCard from './NameCard';
+import VersionDisplay from './VersionDisplay';
 
 interface Message {
     id: string;
@@ -309,7 +310,8 @@ const Chat: React.FC = () => {
                 <div className="bg-white shadow-sm p-4 flex items-center">
                     <div className="flex-1">
                         <Link href="/?utm_source=chat_header">
-                            <h1 className="text-xl font-semibold text-purple-700">Callme-本名</h1>
+                            <h1 className="text-xl font-semibold text-purple-700">Callme-本名 <VersionDisplay /></h1>
+
                         </Link>
                         <p className="text-sm text-gray-500">如果只说一个词，你想别人怎么记住你？</p>
                         <p className="text-sm text-gray-500">More than a name. A line we leave behind.</p>
