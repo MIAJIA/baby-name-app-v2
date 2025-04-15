@@ -1,7 +1,7 @@
 {
   "name": "baby-name-app",
   "author": "Mia and Victor <baby-name-app@zzn.im>",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
