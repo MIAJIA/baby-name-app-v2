@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { ChatHistoryItem } from '@/app/lib/types';
+import { ChatHistoryItem, Role } from '@/app/lib/types';
 import { trackMessage, trackQuickReply } from '@/app/utils/analytics';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -10,7 +10,7 @@ import NameCard from './NameCard';
 interface Message {
     id: string;
     text: string;
-    sender: 'user' | 'assistant';
+    sender: Role;
     quickReplies?: string[];
 }
 
@@ -303,107 +303,109 @@ const Chat: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-gradient-to-b from-blue-50 to-purple-50">
-            {/* 聊天头部 */}
-            <div className="bg-white shadow-sm p-4 flex items-center">
-                <div className="flex-1">
-                    <Link href="/?utm_source=chat_header">
-                        <h1 className="text-xl font-semibold text-purple-700">Callme-本名</h1>
-                    </Link>
-                    <p className="text-sm text-gray-500">如果只说一个词，你想别人怎么记住你？</p>
-                    <p className="text-sm text-gray-500">More than a name. A line we leave behind.</p>
-                </div>
-            </div>
-
-            {/* 消息容器 - 添加padding-bottom来为固定定位的输入框留出空间 */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
-                {messages.map((message) => (
-                    <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] rounded-2xl p-4 ${
-                            message.sender === 'user'
-                                ? 'bg-purple-600 text-white rounded-br-none'
-                                : 'bg-white shadow-md rounded-bl-none'
-                        }`}>
-                            {message.sender === 'user' ? (
-                                <p className="text-white">{message.text}</p>
-                            ) : (
-                                <div className={`markdown-content ${message.sender === 'user' ? 'text-white' : 'text-gray-800'}`}>
-                                    <ReactMarkdown>
-                                        {message.text}
-                                    </ReactMarkdown>
-                                </div>
-                            )}
-                            {message.quickReplies && message.quickReplies.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mt-3">
-                                    {message.quickReplies.map((reply) => (
-                                        <button
-                                            key={reply}
-                                            onClick={() => handleQuickReply(reply)}
-                                            className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm hover:bg-purple-200 transition-colors"
-                                        >
-                                            {reply}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+            <div className="flex flex-col h-[100dvh] bg-gradient-to-b from-blue-50 to-purple-50">
+                {/* 聊天头部 */}
+                <div className="bg-white shadow-sm p-4 flex items-center">
+                    <div className="flex-1">
+                        <Link href="/?utm_source=chat_header">
+                            <h1 className="text-xl font-semibold text-purple-700">Callme-本名</h1>
+                        </Link>
+                        <p className="text-sm text-gray-500">如果只说一个词，你想别人怎么记住你？</p>
+                        <p className="text-sm text-gray-500">More than a name. A line we leave behind.</p>
                     </div>
-                ))}
-                {isLoading && (
-                    <div className="flex justify-start">
-                        <div className="bg-white shadow-md rounded-2xl p-4 rounded-bl-none">
-                            <div className="flex space-x-2">
-                                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce"></div>
-                                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                                <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+
+                {/* 消息容器 - 添加padding-bottom来为固定定位的输入框留出空间 */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+                    {messages.map((message) => (
+                        <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[80%] rounded-2xl p-4 ${
+                                message.sender === 'user'
+                                    ? 'bg-purple-600 text-white rounded-br-none'
+                                    : 'bg-white shadow-md rounded-bl-none'
+                            }`}>
+                                {message.sender === 'user' ? (
+                                    <p className="text-white">{message.text}</p>
+                                ) : (
+                                    <div className={`markdown-content ${message.sender === 'user' as Role ? 'text-white' : message.sender === 'assistant' as Role ? 'text-gray-800' : ''}`}>
+                                        <ReactMarkdown>
+                                            {message.text}
+                                        </ReactMarkdown>
+                                    </div>
+                                )}
+                                {message.quickReplies && message.quickReplies.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-3">
+                                        {message.quickReplies.map((reply) => (
+                                            <button
+                                                key={reply}
+                                                onClick={() => handleQuickReply(reply)}
+                                                className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm hover:bg-purple-200 transition-colors"
+                                            >
+                                                {reply}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    ))}
+                    {isLoading && (
+                        <div className="flex justify-start">
+                            <div className="bg-white shadow-md rounded-2xl p-4 rounded-bl-none">
+                                <div className="flex space-x-2">
+                                    <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
-            {/* Add the recommendations component */}
-            {hasRecommendations && (
-                <NameRecommendations
-                    recommendations={recommendations}
-                    onSelectName={handleSelectName}
-                />
-            )}
-
-            {/* 展示名字卡片 */}
-            {selectedNameInfo && (
-                <NameCard
-                    name={selectedNameInfo.name}
-                    meaning={selectedNameInfo.meaning}
-                    styleTags={selectedNameInfo.styleTags}
-                    onClose={closeNameCard}
-                />
-            )}
-
-            {/* 输入区域 - 使用fixed定位 */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg border-t border-gray-200 pb-safe">
-                <div className="flex items-center gap-2 max-w-4xl mx-auto">
-                    <input
-                        type="text"
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder="输入你的想法..."
-                        disabled={isLoading}
-                        className="flex-1 rounded-full px-6 py-3 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                {/* Add the recommendations component */}
+                {hasRecommendations && (
+                    <NameRecommendations
+                        recommendations={recommendations}
+                        onSelectName={handleSelectName}
                     />
-                    <button
-                        onClick={handleSend}
-                        disabled={isLoading}
-                        className="bg-purple-600 text-white rounded-full p-3 hover:bg-purple-700 transition-colors disabled:opacity-50"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                    </button>
+                )}
+
+                {/* 展示名字卡片 */}
+                {selectedNameInfo && (
+                    <NameCard
+                        name={selectedNameInfo.name}
+                        meaning={selectedNameInfo.meaning}
+                        styleTags={selectedNameInfo.styleTags}
+                        onClose={closeNameCard}
+                    />
+                )}
+
+                {/* 输入区域 - 使用fixed定位 */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg border-t border-gray-200 pb-safe">
+                    <div className="flex items-center gap-2 max-w-4xl mx-auto">
+                        <input
+                            type="text"
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                            placeholder="输入你的想法..."
+                            disabled={isLoading}
+                            className="flex-1 rounded-full px-6 py-3 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
+                        />
+                        <button
+                            onClick={handleSend}
+                            disabled={isLoading}
+                            className="bg-purple-600 text-white rounded-full p-3 hover:bg-purple-700 transition-colors disabled:opacity-50"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Suspense>
     );
 };
 
