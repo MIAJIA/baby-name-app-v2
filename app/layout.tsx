@@ -18,8 +18,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: '宝宝起名助手',
-  description: '为你的宝宝找个好听的名字',
+  title: 'Callme-本名',
+  description: ' — 如果只说一个词，你想别人怎么记住你？More than a name. A line we leave behind.',
 };
 
 export default function RootLayout({
@@ -35,4 +35,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-} 
+}
