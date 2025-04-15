@@ -10,7 +10,7 @@
   .pb-safe {
     padding-bottom: calc(1rem + var(--safe-area-inset-bottom));
   }
-  
+
   .h-screen-safe {
     height: 100dvh;
   }
@@ -28,4 +28,55 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-} 
+}
+
+/* 在全局CSS文件中添加Markdown样式 */
+.markdown-content {
+  /* 基本样式 */
+  line-height: 1.6;
+}
+
+.markdown-content p {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content a {
+  color: #8b5cf6;
+  text-decoration: underline;
+}
+
+/* 确保用户消息中的Markdown文本为白色 */
+.bg-purple-600 .markdown-content {
+  color: white;
+}
+
+.bg-purple-600 .markdown-content a {
+  color: #f3e8ff;
+}
