@@ -1,23 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useVersion } from '@/app/hooks/useVersion';
 
 export default function VersionDisplay() {
-  const [version, setVersion] = useState<string>('');
-
-  useEffect(() => {
-    const fetchVersion = async () => {
-      try {
-        const response = await fetch('/api/v1/healthz');
-        const data = await response.json();
-        setVersion(data.version);
-      } catch (error) {
-        console.error('Failed to fetch version:', error);
-      }
-    };
-
-    fetchVersion();
-  }, []);
+  const version = useVersion();
 
   if (!version) return null;
 
