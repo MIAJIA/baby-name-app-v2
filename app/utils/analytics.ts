@@ -1,19 +1,19 @@
 declare global {
   interface Window {
-    trackMessage: (message: string, type: string) => void;
-    trackQuickReply: (selectedReply: string) => void;
+    trackMessage: (message: string, type: string, version?: string) => void;
+    trackQuickReply: (selectedReply: string, version?: string) => void;
     gtag: (command: string, eventName: string, eventParams?: Record<string, any>) => void;
   }
 }
 
-export const trackMessage = (message: string, type: string) => {
+export const trackMessage = (message: string, type: string, version?: string) => {
   if (typeof window !== 'undefined' && window.trackMessage) {
-    window.trackMessage(message, type);
+    window.trackMessage(message, type, version);
   }
 };
 
-export const trackQuickReply = (selectedReply: string) => {
+export const trackQuickReply = (selectedReply: string, version?: string) => {
   if (typeof window !== 'undefined' && window.trackQuickReply) {
-    window.trackQuickReply(selectedReply);
+    window.trackQuickReply(selectedReply, version);
   }
 }; 

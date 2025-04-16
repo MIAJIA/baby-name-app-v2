@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import NameRecommendations from './NameRecommendations';
 import NameCard from './NameCard';
+import VersionDisplay from './VersionDisplay';
+import { useVersion } from '@/app/hooks/useVersion';
 
 interface Message {
     id: string;
@@ -140,6 +142,7 @@ const Chat: React.FC = () => {
             console.error('Error loading name preferences from localStorage:', error);
         }
     }, []);
+    const version = useVersion();
 
     // Initialize chat with backend
     React.useEffect(() => {
@@ -244,7 +247,7 @@ const Chat: React.FC = () => {
         setIsLoading(true);
 
         // Track user message
-        trackMessage(inputText, 'user_message');
+        trackMessage(inputText, 'user_message', version);
 
         try {
             await sendMessageToAPI(inputText);
@@ -272,7 +275,7 @@ const Chat: React.FC = () => {
         setIsLoading(true);
 
         // Track quick reply selection
-        trackQuickReply(reply);
+        trackQuickReply(reply, version);
 
         try {
             await sendMessageToAPI(reply);
