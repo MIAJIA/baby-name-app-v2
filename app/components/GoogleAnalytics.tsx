@@ -23,23 +23,25 @@ export default function GoogleAnalytics() {
           gtag('config', '${GA_ID}');
 
           // Track message engagement
-          function trackMessage(message, type) {
-            console.log('trackMessage', message, type);
+          function trackMessage(message, type, version) {
+            console.log('trackMessage', message, type, version);
             gtag('event', 'message_engagement', {
               'event_category': 'engagement',
               'event_label': type,
               'value': message.length,
-              'message_type': type
+              'message_type': type,
+              'app_version': version || 'unknown'
             });
           }
 
           // Track quick reply selection
-          function trackQuickReply(selectedReply) {
-            console.log('trackQuickReply', selectedReply);
+          function trackQuickReply(selectedReply, version) {
+            console.log('trackQuickReply', selectedReply, version);
             gtag('event', 'quick_reply_selection', {
               'event_category': 'engagement',
               'event_label': selectedReply,
-              'value': 1
+              'value': 1,
+              'app_version': version || 'unknown'
             });
           }
 
