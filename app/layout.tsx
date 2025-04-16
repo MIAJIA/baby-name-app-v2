@@ -18,8 +18,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Callme-本名',
-  description: ' — 如果只说一个词，你想别人怎么记住你？More than a name. A line we leave behind.',
+  title: 'Callme-英文名灵感馆',
+  description: ' — More than a name. A line we leave behind',
 };
 
 export default function RootLayout({

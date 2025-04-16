@@ -5,7 +5,6 @@ import OpenAI from 'openai';
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
-console.log(`XXX OPENAI_API_KEY: ${process.env.OPENAI_API_KEY}`);
 
 // 定义命名偏好结构 (从README中的规范)
 interface NamingSlots {
@@ -132,7 +131,8 @@ const initialMessageOptions = [
             '好的，慢慢来',
             '我希望名字特别',
             '不希望撞名',
-            '我想让名字有故事感'
+            '我想让名字有故事感',
+            '先推荐几个名字吧'
         ]
     },
     {
@@ -365,7 +365,7 @@ export async function POST(request: Request) {
         while (remainingRetries > 0) {
             try {
                 const completion = await openai.chat.completions.create({
-                    model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+                    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
                     messages: [
                         {
                             role: 'system',
